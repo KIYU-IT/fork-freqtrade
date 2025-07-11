@@ -4,8 +4,10 @@ import MessageBox from '@/components/general/MessageBox.vue';
 import { useBotStore } from '@/stores/ftbotwrapper';
 import type { BacktestHistoryEntry } from '@/types';
 import InfoBox from '../general/InfoBox.vue';
+import { useI18n } from 'vue-i18n';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 const msgBox = ref<typeof MessageBox>();
 const filterText = ref('');
 const filterTextDebounced = refDebounced(filterText, 350, { maxWait: 1000 });
@@ -16,8 +18,8 @@ onMounted(() => {
 
 function deleteBacktestResult(result: BacktestHistoryEntry) {
   const msg: MsgBoxObject = {
-    title: 'Delete result',
-    message: `Delete result ${result.filename} from disk?`,
+    title: t('backtest.deleteResult'),
+    message: t('backtest.confirmDelete', { filename: result.filename }),
     accept: () => {
       botStore.activeBot.deleteBacktestHistoryResult(result);
     },
@@ -30,15 +32,14 @@ function deleteBacktestResult(result: BacktestHistoryEntry) {
   <div>
     <button
       class="btn btn-secondary float-end"
-      title="Refresh"
-      aria-label="Refresh"
+      :title="t('common.refresh')"
+      :aria-label="t('common.refresh')"
       @click="botStore.activeBot.getBacktestHistory"
     >
       <i-mdi-refresh />
     </button>
     <p>
-      Load Historic results from disk. You can click on multiple results to load all of them into
-      freqUI.
+      {{ t('backtest.loadHistoricDescription') }}
     </p>
     <div class="d-flex align-items-center">
       <BFormGroup
@@ -50,8 +51,8 @@ function deleteBacktestResult(result: BacktestHistoryEntry) {
           id="trade-filter"
           v-model="filterText"
           type="text"
-          placeholder="Filter Strategies"
-          tilte="Filter Strategies"
+          :placeholder="t('backtest.filterStrategies')"
+          :title="t('backtest.filterStrategies')"
         />
       </BFormGroup>
     </div>
@@ -63,11 +64,11 @@ function deleteBacktestResult(result: BacktestHistoryEntry) {
     >
       <BThead>
         <BTr>
-          <BTh>Strategy</BTh>
-          <BTh>Details</BTh>
-          <BTh>Backtest Time</BTh>
-          <BTh>Filename</BTh>
-          <BTh>Actions</BTh>
+          <BTh>{{ t('backtest.strategy') }}</BTh>
+          <BTh>{{ t('backtest.details') }}</BTh>
+          <BTh>{{ t('backtest.backtestTime') }}</BTh>
+          <BTh>{{ t('backtest.filename') }}</BTh>
+          <BTh>{{ t('common.actions') }}</BTh>
         </BTr>
       </BThead>
       <BTbody>
@@ -107,7 +108,7 @@ function deleteBacktestResult(result: BacktestHistoryEntry) {
                 v-if="botStore.activeBot.botApiVersion >= 2.31"
                 class="ms-1"
                 size="sm"
-                title="Load this Result."
+                :title="t('backtest.loadThisResult')"
                 :disabled="res.run_id in botStore.activeBot.backtestHistory"
                 @click.stop="botStore.activeBot.getBacktestHistoryResult(res)"
               >
@@ -117,7 +118,7 @@ function deleteBacktestResult(result: BacktestHistoryEntry) {
                 v-if="botStore.activeBot.botApiVersion >= 2.31"
                 class="ms-1"
                 size="sm"
-                title="Delete this Result."
+                :title="t('backtest.deleteThisResult')"
                 :disabled="res.run_id in botStore.activeBot.backtestHistory"
                 @click.stop="deleteBacktestResult(res)"
               >

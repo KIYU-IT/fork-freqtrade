@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useBotStore } from '@/stores/ftbotwrapper';
 
 import type { ChartSliderPosition, StrategyBacktestResult, Trade } from '@/types';
@@ -11,6 +12,7 @@ const props = defineProps<{
   backtestResult: StrategyBacktestResult;
 }>();
 const botStore = useBotStore();
+const { t } = useI18n();
 const isBarVisible = ref({ right: true, left: true });
 const sliderPosition = ref<ChartSliderPosition>();
 
@@ -39,7 +41,7 @@ function refreshOHLCV(pair: string, columns: string[]) {
       <div class="me-2">
         <BButton
           aria-label="Close"
-          title="Pair Navigation"
+          :title="t('backtest.pairNavigation')"
           variant="outline-secondary"
           size="sm"
           @click="isBarVisible.left = !isBarVisible.left"
@@ -49,14 +51,14 @@ function refreshOHLCV(pair: string, columns: string[]) {
         </BButton>
       </div>
       <span class="flex-fill">
-        Graph will always show the latest values for the selected strategy. <br />
-        Timerange: {{ timerange }} - {{ strategy }}
+        {{ t('backtest.graphDescription') }} <br />
+        {{ t('backtest.timerange') }}: {{ timerange }} - {{ strategy }}
       </span>
       <div class="col-md-1 text-end">
         <BButton
           aria-label="Close"
           variant="outline-secondary"
-          title="Trade Navigation"
+          :title="t('backtest.tradeNavigation')"
           size="sm"
           @click="isBarVisible.right = !isBarVisible.right"
         >
@@ -101,7 +103,7 @@ function refreshOHLCV(pair: string, columns: string[]) {
         />
       </Transition>
     </div>
-    <BCard header="Single trades" class="row mt-2 w-100">
+    <BCard :header="t('backtest.singleTrades')" class="row mt-2 w-100">
       <TradeList
         class="row trade-history mt-2 w-100"
         :trades="backtestResult.trades"

@@ -1,3 +1,4 @@
+import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
@@ -6,12 +7,14 @@ import App from './App.vue';
 import { createBootstrap } from './plugins/bootstrap-vue';
 import { VueDraggableGrid } from './plugins/vue-grid-layout';
 import router from './router';
+import i18n from './i18n';
 
 const myApp = createApp(App);
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 myApp.use(pinia);
+myApp.use(i18n);
 myApp.use(createBootstrap());
 
 myApp.use(router);

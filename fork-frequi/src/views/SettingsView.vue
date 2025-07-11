@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { OpenTradeVizOptions, useSettingsStore } from '@/stores/settings';
 import { useLayoutStore } from '@/stores/layout';
 import { FtWsMessageTypes } from '@/types/wsMessageTypes';
@@ -7,43 +8,44 @@ import { ColorPreferences, useColorStore } from '@/stores/colors';
 const settingsStore = useSettingsStore();
 const colorStore = useColorStore();
 const layoutStore = useLayoutStore();
+const { t } = useI18n();
 
 const timezoneOptions = ['UTC', Intl.DateTimeFormat().resolvedOptions().timeZone];
-const openTradesOptions = [
-  { value: OpenTradeVizOptions.showPill, text: 'Show pill in icon' },
-  { value: OpenTradeVizOptions.asTitle, text: 'Show in title' },
-  { value: OpenTradeVizOptions.noOpenTrades, text: "Don't show open trades in header" },
-];
-const colorPreferenceOptions = [
-  { value: ColorPreferences.GREEN_UP, text: 'Green Up/Red Down' },
-  { value: ColorPreferences.RED_UP, text: 'Green Down/Red Up' },
-];
+const openTradesOptions = computed(() => [
+  { value: OpenTradeVizOptions.showPill, text: t('settings.showPillInIcon') },
+  { value: OpenTradeVizOptions.asTitle, text: t('settings.showInTitle') },
+  { value: OpenTradeVizOptions.noOpenTrades, text: t('settings.dontShowOpenTrades') },
+]);
+const colorPreferenceOptions = computed(() => [
+  { value: ColorPreferences.GREEN_UP, text: t('settings.greenUpRedDown') },
+  { value: ColorPreferences.RED_UP, text: t('settings.greenDownRedUp') },
+]);
 
 const resetDynamicLayout = () => {
   layoutStore.resetTradingLayout();
   layoutStore.resetDashboardLayout();
-  showAlert('Layouts have been reset.');
+  showAlert(t('settings.layoutsReset'));
 };
 </script>
 
 <template>
   <div class="container mt-3">
-    <BCard header="FreqUI Settings">
+    <BCard :header="t('settings.title')">
       <div class="text-start d-flex flex-column gap-2">
-        <p>UI Version: {{ settingsStore.uiVersion }}</p>
+        <p>{{ t('settings.uiVersion') }}: {{ settingsStore.uiVersion }}</p>
         <div class="d-flex flex-column border rounded p-2 mb-2 gap-2">
-          <h4>UI settings</h4>
+          <h4>{{ t('settings.uiSettings') }}</h4>
           <BFormGroup
-            description="Lock dynamic layouts, so they cannot move anymore. Can also be set from the navbar at the top."
+            :description="t('settings.lockLayoutDesc')"
           >
-            <BFormCheckbox v-model="layoutStore.layoutLocked">Lock layout</BFormCheckbox>
+            <BFormCheckbox v-model="layoutStore.layoutLocked">{{ t('common.lockLayout') }}</BFormCheckbox>
           </BFormGroup>
-          <BFormGroup description="Reset dynamic layouts to how they were.">
-            <BButton size="sm" class="me-1" @click="resetDynamicLayout">Reset layout</BButton>
+          <BFormGroup :description="t('settings.resetLayoutDesc')">
+            <BButton size="sm" class="me-1" @click="resetDynamicLayout">{{ t('common.resetLayout') }}</BButton>
           </BFormGroup>
           <BFormGroup
-            label="Show open trades in header"
-            description="Decide if open trades should be visualized"
+            :label="t('settings.showOpenTradesInHeader')"
+            :description="t('settings.showOpenTradesDesc')"
           >
             <BFormSelect
               v-model="settingsStore.openTradesInTitle"
@@ -51,56 +53,56 @@ const resetDynamicLayout = () => {
             ></BFormSelect>
           </BFormGroup>
           <BFormGroup
-            label="UTC Timezone"
-            description="Select timezone (we recommend UTC is recommended as exchanges usually work in UTC)"
+            :label="t('settings.utcTimezone')"
+            :description="t('settings.timezoneDesc')"
           >
             <BFormSelect v-model="settingsStore.timezone" :options="timezoneOptions"></BFormSelect>
           </BFormGroup>
-          <BFormGroup description="Keep background sync running while other bots are selected.">
-            <BFormCheckbox v-model="settingsStore.backgroundSync">Background sync</BFormCheckbox>
+          <BFormGroup :description="t('settings.backgroundSyncDesc')">
+            <BFormCheckbox v-model="settingsStore.backgroundSync">{{ t('settings.backgroundSync') }}</BFormCheckbox>
           </BFormGroup>
-          <BFormGroup description="Use confirmation dialogs when force-exiting a trade.">
+          <BFormGroup :description="t('settings.confirmDialogDesc')">
             <BFormCheckbox v-model="settingsStore.confirmDialog"
-              >Show Confirm Dialog for Trade Exits</BFormCheckbox
+              >{{ t('settings.showConfirmDialog') }}</BFormCheckbox
             >
           </BFormGroup>
           <BFormGroup
-            description="Show text on multi pane buttons. If disabled, only shows images."
+            :description="t('settings.multiPaneButtonsDesc')"
           >
             <BFormCheckbox v-model="settingsStore.multiPaneButtonsShowText"
-              >Show Text on Multi Pane Buttons</BFormCheckbox
+              >{{ t('settings.showTextOnMultiPaneButtons') }}</BFormCheckbox
             >
           </BFormGroup>
         </div>
 
         <div class="d-flex flex-column border rounded p-2 mb-2 gap-2">
-          <h4>Chart settings</h4>
+          <h4>{{ t('settings.chartSettings') }}</h4>
           <BFormGroup
-            description="Chart scale Side (Should the scale be displayed on the right or left?)"
+            :description="t('settings.chartScaleSideDesc')"
           >
             <BFormRadioGroup
               v-model="settingsStore.chartLabelSide"
               name="chart-preference-options"
               :options="[
-                { value: 'left', text: 'Left' },
-                { value: 'right', text: 'Right' },
+                { value: 'left', text: t('settings.left') },
+                { value: 'right', text: t('settings.right') },
               ]"
             ></BFormRadioGroup>
           </BFormGroup>
 
-          <BFormGroup description="Use Heikin Ashi candles in your charts">
+          <BFormGroup :description="t('settings.heikinAshiDesc')">
             <BFormCheckbox v-model="settingsStore.useHeikinAshiCandles"
-              >Use Heikin Ashi candles.</BFormCheckbox
+              >{{ t('settings.useHeikinAshi') }}</BFormCheckbox
             >
           </BFormGroup>
           <BFormGroup
-            description="Can reduce the transfer size for large dataframes. May require additional calls if the plot config changes."
+            :description="t('settings.reducedPairCallsDesc')"
           >
             <BFormCheckbox v-model="settingsStore.useReducedPairCalls"
-              >Only request necessary columns (recommended to be checked).</BFormCheckbox
+              >{{ t('settings.onlyRequestNecessaryColumns') }}</BFormCheckbox
             >
           </BFormGroup>
-          <BFormGroup description="Candle Color Preference">
+          <BFormGroup :description="t('settings.candleColorPreference')">
             <BFormRadioGroup
               id="settings-color-preference-radio-group"
               v-model="colorStore.colorPreference"
@@ -136,19 +138,19 @@ const resetDynamicLayout = () => {
           </BFormGroup>
         </div>
         <div class="d-flex flex-column border rounded p-2 mb-2 gap-2">
-          <BFormGroup description="Notifications">
-            <h4>Notification Settings</h4>
+          <BFormGroup :description="t('settings.notifications')">
+            <h4>{{ t('settings.notificationSettings') }}</h4>
             <BFormCheckbox v-model="settingsStore.notifications[FtWsMessageTypes.entryFill]"
-              >Entry notifications</BFormCheckbox
+              >{{ t('settings.entryNotifications') }}</BFormCheckbox
             >
             <BFormCheckbox v-model="settingsStore.notifications[FtWsMessageTypes.exitFill]"
-              >Exit notifications</BFormCheckbox
+              >{{ t('settings.exitNotifications') }}</BFormCheckbox
             >
             <BFormCheckbox v-model="settingsStore.notifications[FtWsMessageTypes.entryCancel]"
-              >Entry Cancel notifications</BFormCheckbox
+              >{{ t('settings.entryCancelNotifications') }}</BFormCheckbox
             >
             <BFormCheckbox v-model="settingsStore.notifications[FtWsMessageTypes.exitCancel]"
-              >Exit Cancel notifications</BFormCheckbox
+              >{{ t('settings.exitCancelNotifications') }}</BFormCheckbox
             >
           </BFormGroup>
         </div>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useBotStore } from '@/stores/ftbotwrapper';
+
+const { t } = useI18n();
 
 const newblacklistpair = ref('');
 const blackListShow = ref(false);
@@ -54,7 +57,7 @@ onMounted(() => {
 <template>
   <div>
     <div>
-      <h3>Whitelist Methods</h3>
+      <h3>{{ t('pairlist.whitelistMethods') }}</h3>
 
       <div v-if="botStore.activeBot.pairlistMethods.length" class="list wide">
         <div
@@ -67,7 +70,7 @@ onMounted(() => {
       </div>
     </div>
     <!-- Show Whitelist -->
-    <h3 :title="`${botStore.activeBot.whitelist.length} pairs`">Whitelist</h3>
+    <h3 :title="`${botStore.activeBot.whitelist.length} ${t('pairlist.pairs')}`">{{ t('pairlist.whitelist') }}</h3>
     <div v-if="botStore.activeBot.whitelist.length" class="list">
       <div
         v-for="(pair, key) in botStore.activeBot.whitelist"
@@ -77,15 +80,15 @@ onMounted(() => {
         {{ pair }}
       </div>
     </div>
-    <p v-else>List Unavailable. Please Login and make sure server is running.</p>
+    <p v-else>{{ t('pairlist.listUnavailable') }}</p>
     <hr />
 
     <!-- Blacklsit -->
     <div>
       <label
         class="me-auto h3"
-        title="Blacklist - Select (followed by a click on '-') to remove pairs"
-        >Blacklist</label
+        :title="t('pairlist.blacklistTooltip')"
+        >{{ t('pairlist.blacklist') }}</label
       >
       <div class="float-end d-flex d-flex-columns pe-1">
         <BButton
@@ -99,7 +102,7 @@ onMounted(() => {
           v-if="botStore.activeBot.botApiVersion >= 1.12"
           size="sm"
           class="col-6"
-          title="Select pairs to delete pairs from your blacklist."
+          :title="t('pairlist.deleteBlacklistTooltip')"
           :disabled="blacklistSelect.length === 0"
           @click="deletePairs"
         >
@@ -107,7 +110,7 @@ onMounted(() => {
         </BButton>
       </div>
       <BPopover
-        title="Add to blacklist"
+        :title="t('pairlist.addToBlacklist')"
         target="blacklist-add-btn"
         triggers="click"
         teleport-to="body"
@@ -115,7 +118,7 @@ onMounted(() => {
       >
         <form ref="form" @submit.prevent="addBlacklistPair">
           <div>
-            <BFormGroup label-cols="2" label="Pair" label-for="pair-input">
+            <BFormGroup label-cols="2" :label="t('trade.pair')" label-for="pair-input">
               <BFormInput
                 id="pair-input"
                 v-model="newblacklistpair"
@@ -124,7 +127,7 @@ onMounted(() => {
               ></BFormInput>
             </BFormGroup>
             <BButton id="blacklist-submit" class="float-end mb-2" size="sm" type="submit">
-              Add
+              {{ t('common.add') }}
             </BButton>
           </div>
         </form>
@@ -141,7 +144,7 @@ onMounted(() => {
         <span class="check"><i-mdi-check-circle /></span>{{ pair }}
       </div>
     </div>
-    <p v-else>BlackList Unavailable. Please Login and make sure server is running.</p>
+    <p v-else>{{ t('pairlist.blacklistUnavailable') }}</p>
     <!-- Pagination -->
     <!-- TODO Add pagination support -->
   </div>

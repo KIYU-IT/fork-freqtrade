@@ -147,11 +147,13 @@ declare module 'vue' {
     IMdiRunFast: typeof import('~icons/mdi/run-fast')['default']
     IMdiStop: typeof import('~icons/mdi/stop')['default']
     IMdiTableEye: typeof import('~icons/mdi/table-eye')['default']
+    IMdiTranslate: typeof import('~icons/mdi/translate')['default']
     IMdiTriangle: typeof import('~icons/mdi/triangle')['default']
     IMdiTriangleDown: typeof import('~icons/mdi/triangle-down')['default']
     IMdiViewDashboardOutline: typeof import('~icons/mdi/view-dashboard-outline')['default']
     IMdiViewList: typeof import('~icons/mdi/view-list')['default']
     InfoBox: typeof import('./components/general/InfoBox.vue')['default']
+    LanguageSelect: typeof import('./components/LanguageSelect.vue')['default']
     LoginModal: typeof import('./components/LoginModal.vue')['default']
     LogViewer: typeof import('./components/ftbot/LogViewer.vue')['default']
     MarketChangeChart: typeof import('./components/charts/MarketChangeChart.vue')['default']
@@ -193,7 +195,7 @@ declare module 'vue' {
     TradesLogChart: typeof import('./components/charts/TradesLogChart.vue')['default']
     ValuePair: typeof import('./components/general/ValuePair.vue')['default']
   }
-  export interface ComponentCustomProperties {
+  export interface GlobalDirectives {
     vBToggle: typeof import('bootstrap-vue-next/directives/BToggle')['vBToggle']
   }
 }

@@ -1,5 +1,6 @@
 forceexit
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { MsgBoxObject } from '@/components/general/MessageBox.vue';
 import MessageBox from '@/components/general/MessageBox.vue';
 import { useBotStore } from '@/stores/ftbotwrapper';
@@ -8,6 +9,7 @@ import type { ForceSellPayload } from '@/types';
 import ForceEntryForm from './ForceEntryForm.vue';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 const forceEnter = ref<boolean>(false);
 const msgBox = ref<typeof MessageBox>();
 
@@ -17,8 +19,8 @@ const isRunning = computed((): boolean => {
 
 const handleStopBot = () => {
   const msg: MsgBoxObject = {
-    title: 'Stop Bot',
-    message: 'Stop the bot loop from running?',
+    title: t('botControls.stop'),
+    message: t('botControls.confirmStop'),
     accept: () => {
       botStore.activeBot.stopBot();
     },
@@ -28,8 +30,8 @@ const handleStopBot = () => {
 
 const handleStopBuy = () => {
   const msg: MsgBoxObject = {
-    title: 'Stop Buying',
-    message: 'Freqtrade will continue to handle open trades.',
+    title: t('botControls.stopBuy'),
+    message: t('botControls.stopBuyMessage'),
     accept: () => {
       botStore.activeBot.stopBuy();
     },
@@ -39,8 +41,8 @@ const handleStopBuy = () => {
 
 const handleReloadConfig = () => {
   const msg: MsgBoxObject = {
-    title: 'Reload',
-    message: 'Reload configuration (including strategy)?',
+    title: t('botControls.reload'),
+    message: t('botControls.confirmReload'),
     accept: () => {
       console.log('reload...');
       botStore.activeBot.reloadConfig();
@@ -51,8 +53,8 @@ const handleReloadConfig = () => {
 
 const handleForceExit = () => {
   const msg: MsgBoxObject = {
-    title: 'ForceExit all',
-    message: 'Really forceexit ALL trades?',
+    title: t('botControls.forceExit'),
+    message: t('botControls.confirmForceExit'),
     accept: () => {
       const payload: ForceSellPayload = {
         tradeid: 'all',
@@ -70,7 +72,7 @@ const handleForceExit = () => {
     <button
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading || isRunning"
-      title="Start Trading"
+      :title="t('botControls.start')"
       @click="botStore.activeBot.startBot()"
     >
       <i-mdi-play height="24" width="24" />
@@ -78,7 +80,7 @@ const handleForceExit = () => {
     <button
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="Stop Trading - Also stops handling open trades."
+      :title="t('botControls.stopDesc')"
       @click="handleStopBot()"
     >
       <i-mdi-stop height="24" width="24" />
@@ -86,7 +88,7 @@ const handleForceExit = () => {
     <button
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="StopBuy - Stops buying, but still handles open trades"
+      :title="t('botControls.stopBuyDesc')"
       @click="handleStopBuy()"
     >
       <i-mdi-pause height="24" width="24" />
@@ -94,7 +96,7 @@ const handleForceExit = () => {
     <button
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading"
-      title="Reload Config - reloads configuration including strategy, resetting all settings changed on the fly."
+      :title="t('botControls.reloadDesc')"
       @click="handleReloadConfig()"
     >
       <i-mdi-reload height="24" width="24" />
@@ -102,7 +104,7 @@ const handleForceExit = () => {
     <button
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading"
-      title="Force exit all"
+      :title="t('botControls.forceExitDesc')"
       @click="handleForceExit()"
     >
       <i-mdi-close-box-multiple height="24" width="24" />
@@ -111,7 +113,7 @@ const handleForceExit = () => {
       v-if="botStore.activeBot.botState && botStore.activeBot.botState.force_entry_enable"
       class="btn btn-secondary btn-sm ms-1"
       :disabled="!botStore.activeBot.isTrading || !isRunning"
-      title="Force enter - Immediately enter a trade at an optional price. Exits are then handled according to strategy rules."
+      :title="t('botControls.forceEnterDesc')"
       @click="forceEnter = true"
     >
       <i-mdi-plus-box-multiple-outline style="font-size: 20px" />
@@ -120,7 +122,7 @@ const handleForceExit = () => {
       v-if="botStore.activeBot.isWebserverMode && false"
       :disabled="botStore.activeBot.isTrading"
       class="btn btn-secondary btn-sm ms-1"
-      title="Start Trading mode"
+      :title="t('botControls.startTradingMode')"
       @click="botStore.activeBot.startTrade()"
     >
       <i-mdi-play class="fs-4" />

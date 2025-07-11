@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useBtStore } from '@/stores/btStore';
 import { useBotStore } from '@/stores/ftbotwrapper';
 
@@ -13,6 +14,7 @@ enum BtRunModes {
 
 const botStore = useBotStore();
 const btStore = useBtStore();
+const { t } = useI18n();
 
 const hasBacktestResult = computed(() =>
   botStore.activeBot.backtestHistory
@@ -74,9 +76,9 @@ watch(
   <div class="d-flex flex-column pt-1 me-1" style="height: calc(100vh - 60px)">
     <div>
       <div class="d-flex flex-row">
-        <h2 class="ms-5">Backtesting</h2>
+        <h2 class="ms-5">{{ t('backtest.title') }}</h2>
         <p v-if="!botStore.activeBot.canRunBacktest">
-          Bot must be in webserver mode to enable Backtesting.
+          {{ t('backtest.webserverRequired') }}
         </p>
         <div class="w-100">
           <div
@@ -90,7 +92,7 @@ watch(
               class="mx-1 flex-samesize-items"
               value="historicResults"
               :disabled="!botStore.activeBot.canRunBacktest"
-              ><i-mdi-cloud-download class="me-2" />Load Results</BFormRadio
+              ><i-mdi-cloud-download class="me-2" />{{ t('backtest.loadResults') }}</BFormRadio
             >
             <BFormRadio
               v-model="btFormMode"
@@ -99,7 +101,7 @@ watch(
               class="mx-1 flex-samesize-items"
               value="run"
               :disabled="!botStore.activeBot.canRunBacktest"
-              ><i-mdi-run-fast class="me-2" />Run backtest</BFormRadio
+              ><i-mdi-run-fast class="me-2" />{{ t('backtest.run') }}</BFormRadio
             >
             <BFormRadio
               id="bt-analyze-btn"
@@ -109,7 +111,7 @@ watch(
               class="mx-1 flex-samesize-items"
               value="results"
               :disabled="!hasBacktestResult"
-              ><i-mdi-table-eye class="me-2" />Analyze result</BFormRadio
+              ><i-mdi-table-eye class="me-2" />{{ t('backtest.analyzeResult') }}</BFormRadio
             >
             <BFormRadio
               v-if="hasMultiBacktestResult"
@@ -119,7 +121,7 @@ watch(
               class="mx-1 flex-samesize-items"
               value="compare-results"
               :disabled="!hasMultiBacktestResult"
-              ><i-mdi-compare-horizontal class="me-2" />Compare results</BFormRadio
+              ><i-mdi-compare-horizontal class="me-2" />{{ t('backtest.compareResults') }}</BFormRadio
             >
             <BFormRadio
               v-model="btFormMode"
@@ -128,7 +130,7 @@ watch(
               class="mx-1 flex-samesize-items"
               value="visualize-summary"
               :disabled="!hasBacktestResult"
-              ><i-mdi-chart-bell-curve-cumulative class="me-2" />Visualize summary</BFormRadio
+              ><i-mdi-chart-bell-curve-cumulative class="me-2" />{{ t('backtest.visualizeSummary') }}</BFormRadio
             >
             <BFormRadio
               v-model="btFormMode"
@@ -137,11 +139,11 @@ watch(
               class="mx-1 flex-samesize-items"
               value="visualize"
               :disabled="!hasBacktestResult"
-              ><i-mdi-chart-timeline-variant-shimmer class="me-2" />Visualize result</BFormRadio
+              ><i-mdi-chart-timeline-variant-shimmer class="me-2" />{{ t('backtest.visualizeResult') }}</BFormRadio
             >
           </div>
           <small v-show="botStore.activeBot.backtestRunning" class="text-end bt-running-label"
-            >Backtest running: {{ botStore.activeBot.backtestStep }}
+            >{{ t('backtest.running') }}: {{ botStore.activeBot.backtestStep }}
             {{ formatPercent(botStore.activeBot.backtestProgress, 2) }}</small
           >
         </div>

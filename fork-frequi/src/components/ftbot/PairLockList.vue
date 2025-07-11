@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Lock } from '@/types';
 
 import { useBotStore } from '@/stores/ftbotwrapper';
 import type { TableField } from 'bootstrap-vue-next';
 const botStore = useBotStore();
+const { t } = useI18n();
 
 const tableFields: TableField[] = [
-  { key: 'pair', label: 'Pair' },
-  { key: 'lock_end_timestamp', label: 'Until', formatter: (value) => timestampms(value as number) },
-  { key: 'reason', label: 'Reason' },
+  { key: 'pair', label: t('trade.pair') },
+  { key: 'lock_end_timestamp', label: t('pairLocks.until'), formatter: (value) => timestampms(value as number) },
+  { key: 'reason', label: t('pairLocks.reason') },
   { key: 'actions' },
 ];
 
@@ -17,7 +19,7 @@ const removePairLock = (item: Lock) => {
   if (item.id !== undefined) {
     botStore.activeBot.deleteLock(item.id);
   } else {
-    showAlert('This Freqtrade version does not support deleting locks.');
+    showAlert(t('pairLocks.deleteNotSupported'));
   }
 };
 </script>
@@ -25,7 +27,7 @@ const removePairLock = (item: Lock) => {
 <template>
   <div>
     <div class="mb-2">
-      <label class="me-auto h3">Pair Locks</label>
+      <label class="me-auto h3">{{ t('trading.pairLocks') }}</label>
       <BButton class="float-end" size="sm" @click="botStore.activeBot.getLocks">
         <i-mdi-refresh />
       </BButton>
@@ -36,7 +38,7 @@ const removePairLock = (item: Lock) => {
           <BButton
             class="btn-xs ms-1"
             size="sm"
-            title="Delete trade"
+            :title="t('pairLocks.deleteLock')"
             @click="removePairLock(row.item as unknown as Lock)"
           >
             <i-mdi-delete />

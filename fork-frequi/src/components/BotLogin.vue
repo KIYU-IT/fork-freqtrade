@@ -3,6 +3,7 @@ import type { AuthPayload, AuthStorageWithBotId } from '@/types';
 
 import { useBotStore } from '@/stores/ftbotwrapper';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 
 const props = defineProps({
@@ -16,6 +17,7 @@ const defaultURL = window.location.origin || 'http://localhost:3000';
 const router = useRouter();
 const route = useRoute();
 const botStore = useBotStore();
+const { t } = useI18n();
 
 const nameState = ref<boolean>();
 const pwdState = ref<boolean>();
@@ -115,12 +117,11 @@ const handleSubmit = async () => {
     if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
       nameState.value = false;
       pwdState.value = false;
-      errorMessage.value = 'Connected to bot, however Login failed, Username or Password wrong.';
+      errorMessage.value = t('login.loginFailed');
     } else {
       urlState.value = false;
-      errorMessage.value = `Login failed.
-Please verify that the bot is running, the Bot API is enabled and the URL is reachable.
-You can verify this by navigating to ${auth.value.url}/api/v1/ping to make sure the bot API is reachable`;
+      errorMessage.value = t('login.connectionFailed') + `
+${auth.value.url}/api/v1/ping`;
       if (auth.value.url !== window.location.origin) {
         errorMessageCORS.value = true;
       }
@@ -154,19 +155,19 @@ defineExpose({
 <template>
   <div>
     <form ref="formRef" novalidate @submit.stop.prevent="handleSubmit" @reset="handleReset">
-      <BFormGroup label="Bot Name" label-for="name-input">
+      <BFormGroup :label="t('login.botName')" label-for="name-input">
         <BFormInput
           id="name-input"
           v-model="auth.botName"
-          placeholder="Bot Name"
+          :placeholder="t('login.botNamePlaceholder')"
           @keydown.enter="handleOk"
         ></BFormInput>
       </BFormGroup>
       <BFormGroup
         :state="urlState"
-        label="API Url"
+        :label="t('login.apiUrl')"
         label-for="url-input"
-        invalid-feedback="API Url required"
+        :invalid-feedback="t('login.apiUrlRequired')"
       >
         <BFormInput
           id="url-input"
@@ -182,28 +183,28 @@ defineExpose({
           :model-value="true"
           variant="warning"
         >
-          This URL is already in use by another bot.
+          {{ t('login.urlDuplicate') }}
         </BAlert>
       </BFormGroup>
       <BFormGroup
         :state="nameState"
-        label="Username"
+        :label="t('login.username')"
         label-for="username-input"
-        invalid-feedback="Name and Password are required."
+        :invalid-feedback="t('login.credentialsRequired')"
       >
         <BFormInput
           id="username-input"
           v-model="auth.username"
           required
-          placeholder="Freqtrader"
+          :placeholder="t('login.username')"
           :state="nameState"
           @keydown.enter="handleOk"
         ></BFormInput>
       </BFormGroup>
       <BFormGroup
-        label="Password"
+        :label="t('login.password')"
         label-for="password-input"
-        invalid-feedback="Invalid Password"
+        :invalid-feedback="t('login.invalidPassword')"
         :state="pwdState"
       >
         <BFormInput
@@ -228,8 +229,8 @@ defineExpose({
         </BAlert>
       </div>
       <div v-if="inModal === false" class="float-end">
-        <BButton class="me-2" type="reset" variant="danger">Reset</BButton>
-        <BButton type="submit" variant="primary">Submit</BButton>
+        <BButton class="me-2" type="reset" variant="danger">{{ t('login.reset') }}</BButton>
+        <BButton type="submit" variant="primary">{{ t('login.submit') }}</BButton>
       </div>
     </form>
   </div>

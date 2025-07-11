@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useBotStore } from '@/stores/ftbotwrapper';
 import { MarginMode, TradingMode } from '@/types';
 import type { ExchangeSelection, Markets, MarketsPayload, PairHistoryPayload } from '@/types';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 const strategy = ref('');
 const timerange = ref('');
 const selectedTimeframe = ref('1h');
@@ -114,7 +116,7 @@ watch(
     <div v-if="botStore.activeBot.isWebserverMode" class="mx-md-3 mt-2">
       <div class="d-flex flex-column flex-md-row-reverse border rounded-1 p-1">
         <BButton v-b-toggle.ws-settings class="ms-auto align-self-start col-12 col-md-2"
-          >Show/hide setup</BButton
+          >{{ t('chart.showHideSetup') }}</BButton
         >
         <BCollapse id="ws-settings" visible class="w-100">
           <div
@@ -122,7 +124,7 @@ watch(
             class="mb-2 border rounded-1 p-2 text-start col-12 col-md-6"
           >
             <BFormCheckbox v-model="exchange.customExchange" v-b-toggle.custom-exchange>
-              Custom Exchange
+              {{ t('chart.customExchange') }}
             </BFormCheckbox>
             <BCollapse id="custom-exchange">
               <ExchangeSelect v-model="exchange.selectedExchange" />
@@ -130,19 +132,19 @@ watch(
           </div>
           <div class="d-flex flex-wrap mx-1 gap-1 gap-md-2">
             <div class="col-12 col-md-3 text-start me-md-1">
-              <span>Strategy</span>
+              <span>{{ t('trade.strategy') }}</span>
               <StrategySelect v-model="strategy" class="mt-1 mb-1"></StrategySelect>
               <BFormCheckbox
                 v-if="botStore.activeBot.botState.api_version >= 2.42"
                 v-model="useLiveData"
                 class="align-self-center"
-                title="Use live data from the exchange. Only use if you don't have data downloaded locally."
+                :title="t('chart.useLiveDataDesc')"
               >
-                Use Live Data
+                {{ t('chart.useLiveData') }}
               </BFormCheckbox>
             </div>
             <div class="col-12 col-md-3 text-start">
-              <span>Timeframe</span>
+              <span>{{ t('trade.timeframe') }}</span>
               <TimeframeSelect v-model="selectedTimeframe" class="mt-1" />
             </div>
             <TimeRangeSelect v-model="timerange"></TimeRangeSelect>

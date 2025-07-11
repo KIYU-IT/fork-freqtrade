@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Lock, Trade } from '@/types';
 
 import { useBotStore } from '@/stores/ftbotwrapper';
+
+const { t } = useI18n();
 
 interface CombinedPairList {
   pair: string;
@@ -38,7 +41,7 @@ const combinedPairList = computed(() => {
     allLocks.sort((a, b) => (a.lock_end_timestamp > b.lock_end_timestamp ? -1 : 1));
     if (allLocks.length > 0) {
       [locks] = allLocks;
-      lockReason = `${timestampms(locks.lock_end_timestamp)} - ${locks.side} - ${locks.reason}`;
+      lockReason = `${timestampms(locks.lock_end_timestamp)} - ${t(`trade.${locks.side}`)} - ${locks.reason}`;
     }
     let profitString = '';
     let profit = 0;
@@ -53,10 +56,10 @@ const combinedPairList = computed(() => {
     const tradeCount = trades.length;
     const trade = tradeCount ? trades[0] : undefined;
     if (trades.length > 0) {
-      profitString = `Current profit: ${formatPercent(profit)}`;
+      profitString = `${t('pairSummary.currentProfit')}: ${formatPercent(profit)}`;
     }
     if (trade) {
-      profitString += `\nOpen since: ${timestampms(trade.open_timestamp)}`;
+      profitString += `\n${t('pairSummary.openSince')}: ${timestampms(trade.open_timestamp)}`;
     }
     if (
       filterText.value === '' ||
@@ -107,7 +110,7 @@ const combinedPairList = computed(() => {
         'me-2': !backtestMode,
       }"
     >
-      <BFormInput id="trade-filter" v-model="filterText" type="text" placeholder="Filter" />
+      <BFormInput id="trade-filter" v-model="filterText" type="text" :placeholder="t('pairSummary.filter')" />
     </BFormGroup>
     <BListGroup>
       <BListGroupItem
@@ -116,7 +119,7 @@ const combinedPairList = computed(() => {
         button
         class="d-flex justify-content-between align-items-center py-1"
         :active="comb.pair === botStore.activeBot.selectedPair"
-        :title="`${formatPriceCurrency(comb.profitAbs, botStore.activeBot.stakeCurrency, botStore.activeBot.stakeCurrencyDecimals)} - ${comb.pair} - ${comb.tradeCount} trades`"
+        :title="`${formatPriceCurrency(comb.profitAbs, botStore.activeBot.stakeCurrency, botStore.activeBot.stakeCurrencyDecimals)} - ${comb.pair} - ${comb.tradeCount} ${t('pairSummary.trades')}`"
         @click="botStore.activeBot.selectedPair = comb.pair"
       >
         <div>

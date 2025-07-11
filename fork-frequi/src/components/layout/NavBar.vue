@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import Favico from 'favico.js';
+import { useI18n } from 'vue-i18n';
 
 import { OpenTradeVizOptions, useSettingsStore } from '@/stores/settings';
 import { useLayoutStore } from '@/stores/layout';
 import { useBotStore } from '@/stores/ftbotwrapper';
 import { useRoute } from 'vue-router';
+import LanguageSelect from '@/components/LanguageSelect.vue';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
 const layoutStore = useLayoutStore();
@@ -110,15 +113,15 @@ watch(
 
       <BCollapse id="nav-collapse" class="text-center" is-nav>
         <BNavbarNav>
-          <BNavItem v-if="!botStore.canRunBacktest" to="/trade">Trade</BNavItem>
-          <BNavItem v-if="!botStore.canRunBacktest" to="/dashboard">Dashboard</BNavItem>
-          <BNavItem to="/graph">Chart</BNavItem>
-          <BNavItem to="/logs">Logs</BNavItem>
-          <BNavItem v-if="botStore.canRunBacktest" to="/backtest">Backtest</BNavItem>
+          <BNavItem v-if="!botStore.canRunBacktest" to="/trade">{{ t('nav.trade') }}</BNavItem>
+          <BNavItem v-if="!botStore.canRunBacktest" to="/dashboard">{{ t('nav.dashboard') }}</BNavItem>
+          <BNavItem to="/graph">{{ t('nav.chart') }}</BNavItem>
+          <BNavItem to="/logs">{{ t('nav.logs') }}</BNavItem>
+          <BNavItem v-if="botStore.canRunBacktest" to="/backtest">{{ t('nav.backtest') }}</BNavItem>
           <BNavItem
             v-if="botStore.isWebserverMode && botStore.activeBot.botApiVersion >= 2.41"
             to="/download_data"
-            >Download Data</BNavItem
+            >{{ t('nav.downloadData') }}</BNavItem
           >
           <BNavItem
             v-if="
@@ -126,9 +129,10 @@ watch(
               botStore.activeBot.botApiVersion >= 2.3
             "
             to="/pairlist_config"
-            >Pairlist Config</BNavItem
+            >{{ t('nav.pairlistConfig') }}</BNavItem
           >
           <ThemeSelect />
+          <LanguageSelect />
         </BNavbarNav>
 
         <!-- Right aligned nav items -->
@@ -172,8 +176,8 @@ watch(
             <BNavText v-if="botStore.botCount === 1">
               {{
                 botStore.activeBotorUndefined && botStore.activeBotorUndefined.isBotOnline
-                  ? 'Online'
-                  : 'Offline'
+                  ? t('common.online')
+                  : t('common.offline')
               }}
             </BNavText>
           </li>
@@ -185,16 +189,16 @@ watch(
               </template>
               <span class="ps-3">V: {{ settingsStore.uiVersion }}</span>
               <!-- Link active-class to non-existant class to avoid it getting the "light" active color -->
-              <BDropdownItem active-class="non-existant" to="/settings">Settings</BDropdownItem>
+              <BDropdownItem active-class="non-existant" to="/settings">{{ t('nav.settings') }}</BDropdownItem>
               <div class="ps-3">
-                <BFormCheckbox v-model="layoutStore.layoutLocked">Lock layout</BFormCheckbox>
+                <BFormCheckbox v-model="layoutStore.layoutLocked">{{ t('common.lockLayout') }}</BFormCheckbox>
               </div>
-              <BDropdownItem @click="resetDynamicLayout">Reset Layout</BDropdownItem>
+              <BDropdownItem @click="resetDynamicLayout">{{ t('common.resetLayout') }}</BDropdownItem>
               <template v-if="botStore.botCount === 1">
                 <BDropdownDivider />
                 <BDropdownItem active-class="non-existant" @click="clickLogout()">
                   <i-mdi-logout class="me-1" />
-                  Sign Out
+                  {{ t('nav.signOut') }}
                 </BDropdownItem>
               </template>
             </BNavItemDropdown>
@@ -210,15 +214,15 @@ watch(
                   </b-nav-text>
                 </div>
               </li> -->
-              <BNavItem class="py-0" to="/settings" title="Settings">
-                Settings <i-mdi-cog class="ms-auto" />
+              <BNavItem class="py-0" to="/settings" :title="t('nav.settings')">
+                {{ t('nav.settings') }} <i-mdi-cog class="ms-auto" />
               </BNavItem>
               <BNavItem
                 v-if="botStore.botCount === 1"
                 class="nav-link navbar-nav"
                 to="/"
                 @click="clickLogout()"
-                >Sign Out</BNavItem
+                >{{ t('nav.signOut') }}</BNavItem
               >
             </div>
           </li>

@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { DashboardLayout, findGridLayout, useLayoutStore } from '@/stores/layout';
 import { useBotStore } from '@/stores/ftbotwrapper';
 import type { GridItemData } from '@/types';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 
 const layoutStore = useLayoutStore();
 const currentBreakpoint = ref('');
@@ -103,7 +105,7 @@ onMounted(async () => {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer :header="`Profit over time ${botStore.botCount > 1 ? 'combined' : ''}`">
+        <DraggableContainer :header="`${t('dashboard.profitOverTime')} ${botStore.botCount > 1 ? t('dashboard.combined') : ''}`">
           <PeriodBreakdown multi-bot-view />
         </DraggableContainer>
       </GridItem>
@@ -118,7 +120,7 @@ onMounted(async () => {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Bot comparison">
+        <DraggableContainer :header="t('dashboard.botComparison')">
           <BotComparisonList />
         </DraggableContainer>
       </GridItem>
@@ -136,10 +138,10 @@ onMounted(async () => {
         <DraggableContainer>
           <template #header>
             <div class="d-flex justify-content-center">
-              Open Trades
+              {{ t('dashboard.openTrades') }}
               <InfoBox
                 class="ms-2"
-                hint="Open trades of all selected bots. Click on a trade to go to the trade page for that trade/bot."
+                :hint="t('dashboard.openTradesHint')"
               />
             </div>
           </template>
@@ -157,7 +159,7 @@ onMounted(async () => {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Cumulative Profit">
+        <DraggableContainer :header="t('dashboard.cumulativeProfit')">
           <CumProfitChart
             :trades="botStore.allTradesSelectedBots"
             :open-trades="botStore.allOpenTradesSelectedBots"
@@ -179,10 +181,10 @@ onMounted(async () => {
         <DraggableContainer>
           <template #header>
             <div class="d-flex justify-content-center">
-              Closed Trades
+              {{ t('dashboard.closedTrades') }}
               <InfoBox
                 class="ms-2"
-                hint="Closed trades for all selected bots. Click on a trade to go to the trade page for that trade/bot."
+                :hint="t('dashboard.closedTradesHint')"
               />
             </div>
           </template>
@@ -205,7 +207,7 @@ onMounted(async () => {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Profit Distribution">
+        <DraggableContainer :header="t('dashboard.profitDistribution')">
           <ProfitDistributionChart :trades="botStore.allTradesSelectedBots" :show-title="false" />
         </DraggableContainer>
       </GridItem>
@@ -220,7 +222,7 @@ onMounted(async () => {
         :min-h="4"
         drag-allow-from=".drag-header"
       >
-        <DraggableContainer header="Trades Log">
+        <DraggableContainer :header="t('dashboard.tradesLog')">
           <TradesLogChart :trades="botStore.allTradesSelectedBots" :show-title="false" />
         </DraggableContainer>
       </GridItem>

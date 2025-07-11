@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useBotStore } from '@/stores/ftbotwrapper';
 import type { BalanceValues } from '@/types';
 import type { TableField } from 'bootstrap-vue-next';
 
 const botStore = useBotStore();
+const { t } = useI18n();
 const hideSmallBalances = ref(true);
 const showBotOnly = ref(true);
 
@@ -50,15 +52,15 @@ const chartValues = computed<BalanceValues[]>(() => {
 
 const tableFields = computed<TableField[]>(() => {
   return [
-    { key: 'currency', label: 'Currency' },
+    { key: 'currency', label: t('balance.currency') },
     {
       key: showBotOnly.value && canUseBotBalance.value ? 'bot_owned' : 'free',
-      label: 'Available',
+      label: t('balance.available'),
       formatter: formatCurrency,
     },
     {
       key: showBotOnly.value && canUseBotBalance.value ? 'est_stake_bot' : 'est_stake',
-      label: `in ${botStore.activeBot.balance.stake}`,
+      label: `${t('balance.in')} ${botStore.activeBot.balance.stake}`,
       formatter: formatCurrency,
     },
   ];
@@ -76,12 +78,12 @@ onMounted(() => {
 <template>
   <div>
     <div class="d-flex flex-wrap flex-row mb-2 justify-content-end align-items-center">
-      <label class="h3 me-auto mb-0">{{ showBotOnly ? 'Bot' : 'Account' }} Balance</label>
+      <label class="h3 me-auto mb-0">{{ showBotOnly ? t('balance.botBalance') : t('balance.accountBalance') }}</label>
       <div class="d-flex flex-row">
         <BButton
           v-if="canUseBotBalance"
           size="sm"
-          :title="!showBotOnly ? 'Showing Account balance' : 'Showing Bot balance'"
+          :title="!showBotOnly ? t('balance.showingAccountBalance') : t('balance.showingBotBalance')"
           @click="showBotOnly = !showBotOnly"
         >
           <i-mdi-robot v-if="showBotOnly" />
@@ -89,7 +91,7 @@ onMounted(() => {
         </BButton>
         <BButton
           size="sm"
-          :title="!hideSmallBalances ? 'Hide small balances' : 'Show all balances'"
+          :title="!hideSmallBalances ? t('balance.hideSmallBalances') : t('balance.showAllBalances')"
           @click="hideSmallBalances = !hideSmallBalances"
         >
           <i-mdi-eye-off v-if="hideSmallBalances" />
@@ -108,11 +110,11 @@ onMounted(() => {
       </p>
       <BTable class="table-sm" :items="balanceCurrencies" :fields="tableFields">
         <template #custom-foot>
-          <td class="pt-1"><strong>Total</strong></td>
+          <td class="pt-1"><strong>{{ t('balance.total') }}</strong></td>
           <td class="pt-1">
             <span
               class="font-italic"
-              :title="`Increase over initial capital of ${formatCurrency(
+              :title="`${t('balance.increaseOverInitialCapital')} ${formatCurrency(
                 botStore.activeBot.balance.starting_capital,
               )} ${botStore.activeBot.balance.stake}`"
             >

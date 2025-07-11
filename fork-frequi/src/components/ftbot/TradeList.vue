@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { MultiDeletePayload, MultiForcesellPayload, Trade } from '@/types';
 
 import { useBotStore } from '@/stores/ftbotwrapper';
 import { useRouter } from 'vue-router';
 import type { TableField, TableItem } from 'bootstrap-vue-next';
+
+const { t } = useI18n();
 
 enum ModalReasons {
   removeTrade,
@@ -50,37 +53,37 @@ const tableFields = ref<any[]>([]);
 onMounted(() => {
   const openFields: TableField[] = [{ key: 'actions' }];
   const closedFields: TableField[] = [
-    { key: 'close_timestamp', label: 'Close date' },
-    { key: 'exit_reason', label: 'Close Reason' },
+    { key: 'close_timestamp', label: t('trade.closeDate') },
+    { key: 'exit_reason', label: t('tradeList.closeReason') },
   ];
   const stakeAmountCol: TableField = props.activeTrades
     ? {
         key: 'stake_amount',
-        label: 'Stake amount',
+        label: t('tradeList.stakeAmount'),
       }
     : {
         key: 'max_stake_amount',
-        label: 'Total stake amount',
+        label: t('tradeList.totalStakeAmount'),
       };
 
   tableFields.value = [
-    { key: 'trade_id', label: 'ID' },
-    { key: 'pair', label: 'Pair' },
-    { key: 'amount', label: 'Amount' },
+    { key: 'trade_id', label: t('tradeList.id') },
+    { key: 'pair', label: t('trade.pair') },
+    { key: 'amount', label: t('trade.amount') },
     stakeAmountCol,
     {
       key: 'open_rate',
-      label: 'Open rate',
+      label: t('trade.openRate'),
       formatter: (value: unknown) => formatPrice(value as number),
     },
     {
       key: props.activeTrades ? 'current_rate' : 'close_rate',
-      label: props.activeTrades ? 'Current rate' : 'Close rate',
+      label: props.activeTrades ? t('trade.currentRate') : t('trade.closeRate'),
       formatter: (value: unknown) => formatPrice(value as number),
     },
     {
       key: 'profit',
-      label: props.activeTrades ? 'Current profit %' : 'Profit %',
+      label: props.activeTrades ? t('tradeList.currentProfitPercent') : t('trade.profitRatio'),
       formatter: (value: unknown, key?: string, item?: unknown) => {
         if (!item) {
           return '';
@@ -90,11 +93,11 @@ onMounted(() => {
         return `${percent} ${`(${formatPriceWithDecimals(typedItem.profit_abs)})`}`;
       },
     },
-    { key: 'open_timestamp', label: 'Open date' },
+    { key: 'open_timestamp', label: t('trade.openDate') },
     ...(props.activeTrades ? openFields : closedFields),
   ];
   if (props.multiBotView) {
-    tableFields.value.unshift({ key: 'botName', label: 'Bot' });
+    tableFields.value.unshift({ key: 'botName', label: t('tradeList.bot') });
   }
 });
 
@@ -102,7 +105,7 @@ const feOrderType = ref<string | undefined>(undefined);
 function forceExitHandler(item: Trade, ordertype: string | undefined = undefined) {
   feTrade.value = item;
   confirmExitValue.value = ModalReasons.forceExit;
-  confirmExitText.value = `Really exit trade ${item.trade_id} (Pair ${item.pair}) using ${ordertype} Order?`;
+  confirmExitText.value = t('tradeList.confirmExit', { tradeId: item.trade_id, pair: item.pair, orderType: ordertype });
   feOrderType.value = ordertype;
   if (settingsStore.confirmDialog === true) {
     removeTradeVisible.value = true;
@@ -145,7 +148,7 @@ function forceExitExecuter() {
 }
 
 function removeTradeHandler(item: Trade) {
-  confirmExitText.value = `Really delete trade ${item.trade_id} (Pair ${item.pair})?`;
+  confirmExitText.value = t('tradeList.confirmDelete', { tradeId: item.trade_id, pair: item.pair });
   confirmExitValue.value = ModalReasons.removeTrade;
   feTrade.value = item;
   removeTradeVisible.value = true;
@@ -157,7 +160,7 @@ function forceExitPartialHandler(item: Trade) {
 }
 
 function cancelOpenOrderHandler(item: Trade) {
-  confirmExitText.value = `Cancel open order for trade ${item.trade_id} (Pair ${item.pair})?`;
+  confirmExitText.value = t('tradeList.confirmCancelOpenOrder', { tradeId: item.trade_id, pair: item.pair });
   feTrade.value = item;
   confirmExitValue.value = ModalReasons.cancelOpenOrder;
   removeTradeVisible.value = true;
@@ -240,7 +243,7 @@ watch(
       "
       :fields="tableFields"
       show-empty
-      :empty-text="emptyText"
+      :empty-text="props.activeTrades ? t('trading.noOpenTrades') : t('trading.noClosedTrades')"
       :per-page="perPage"
       :current-page="currentPage"
       primary-key="botTradeId"
@@ -274,7 +277,7 @@ watch(
         {{ row.item.trade_id }}
         {{
           botStore.activeBot.botApiVersion > 2.0 && row.item.trading_mode !== 'spot'
-            ? '| ' + (row.item.is_short ? 'Short' : 'Long')
+            ? '| ' + (row.item.is_short ? t('trade.short') : t('trade.long'))
             : ''
         }}
       </template>
@@ -301,7 +304,7 @@ watch(
         aria-controls="my-table"
       ></BPagination>
       <BFormGroup v-if="showFilter" label-for="trade-filter">
-        <BFormInput id="trade-filter" v-model="filterText" type="text" placeholder="Filter" />
+        <BFormInput id="trade-filter" v-model="filterText" type="text" :placeholder="t('tradeList.filter')" />
       </BFormGroup>
     </div>
     <ForceExitForm
@@ -316,7 +319,7 @@ watch(
       position-increase
     />
 
-    <BModal v-model="removeTradeVisible" title="Exit trade" @ok="forceExitExecuter">
+    <BModal v-model="removeTradeVisible" :title="t('tradeList.exitTrade')" @ok="forceExitExecuter">
       {{ confirmExitText }}
     </BModal>
   </div>
